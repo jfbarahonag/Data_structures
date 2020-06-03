@@ -55,6 +55,9 @@ void ingresar_datos_usuario ( char *buff ) {
 	scanf("%[^\n]%*c", buff);
 }
 
+/*
+*
+*/
 char *encontrar_prox_operador ( char *buff ) {
 	size_t tamano = strlen(buff);
 	char *dato;
@@ -139,6 +142,9 @@ Datos encontrarUltimoCola ( ApTipoCola cola ) {
 
 }
 
+/*
+*
+*/
 void eliminarUltimoCola ( ApTipoCola cola ) {
 	Datos info;
 	TipoCola aux;
@@ -316,27 +322,62 @@ float realizar_operacion_ingresada ( ApTipoCola cola ) {
 	return operar_restantes ( cola );
 }
 
-// Demostraci�n a manera de ejemplo de como almacena y muestra una 
-// expresi�n en una pila y en una cola
+/*
+*
+*/
+void invertirColaRec ( ApTipoCola cola ) {
+	Datos info;
+	if(!vaciaCola(cola)) {
+		info = retirarCola(cola);
+		invertirColaRec(cola);
+		insertarCola(cola, info);
+	}
+}
+
+/*
+*
+*/
+void imprimirColaRec ( ApTipoCola cola ) {
+	Datos info;
+	if(!vaciaCola(cola)) {
+		info = retirarCola(cola);
+		if ( tipoDato(info) == 1 ) { /* es un valor */
+			printf("El valor es:\t%0.2f\n", info.valor);
+		}
+		else {
+			printf("El operador es:\t%c\n", info.operador);
+		}
+		imprimirColaRec(cola);
+		insertarCola(cola, info);	
+	}
+}
+
+/*
+*
+*/
+void mostrarColaRec ( ApTipoCola cola ) {
+	printf("\n La cola esta asi :\n\n");
+	imprimirColaRec(cola);
+	invertirColaRec(cola);
+	printf("\n Fin cola\n\n");
+}
+
 int main(void){
 	TipoPila *pila;
 	TipoCola cola;
 	Datos info;
 	ApTipoCola cola_ptr;
+	float resultado;
+	char buff[51];
 
 	cola_ptr = &cola;
-
 	crearCola(&cola);
-
-	char buff[51];
+	
 	memset(buff, '\0', 51);
 	ingresar_datos_usuario(buff);
-	
-	//printf("eco: %s\n",buff);
 	ingresar_datos_cola (cola_ptr, buff);
-	//mostrarCola(cola_ptr);
-	float resultado;
+	mostrarColaRec(cola_ptr);
 	resultado = realizar_operacion_ingresada(cola_ptr);
-	printf("resultado final = %f\n", resultado);
+	printf("resultado final = %0.2f\n", resultado);
 	
 }
