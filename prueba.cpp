@@ -56,8 +56,10 @@ void ingresar_datos_usuario ( char *buff ) {
 }
 
 /*
-*
+* 
+Encuentra un operador, Como parametro recibe un buffer y retorna un apuntador a buffer
 */
+
 char *encontrar_prox_operador ( char *buff ) {
 	size_t tamano = strlen(buff);
 	char *dato;
@@ -68,10 +70,10 @@ char *encontrar_prox_operador ( char *buff ) {
 		if (*(dato+i) >= '0' && *(dato+i) <= '9') { /* si es un numero */
 
 		} 
-		else if (*(dato+i) == '\0') {
+		else if (*(dato+i) == '\0') {    // dato [i]
 			return NULL;
 		}
-		else {
+		else {                        //Es un operador
 		 return dato+i;
 		}
 		i++;
@@ -82,30 +84,35 @@ char *encontrar_prox_operador ( char *buff ) {
 }
 
 /*
-* Toma los datos leidos por el buffer y los organiza en el mismo orden que llegaron en la cola
+* Toma los datos leidos por el buffer y los organiza en el mismo orden que llegaron en la cola.
+Como parametro de entrada recibe la cola en que serán guardados los datos y el buffer del cual provienen, La función  opera con dos apuntadores
+los cuales apuntarán a diferentes posiciones del buffer según el contenido de este (Valor u operador) para lo cual se utilizará otra funcion llamada 
+"encontrar_prox_operador"
+se irán insertando los datos que se encuentren dentro del rango obtenido al restar las dos posiciones de cada apuntador
 */
 void ingresar_datos_cola ( ApTipoCola cola, char *buff ) {
 	Datos info;
 	char buff_temp[51];
-	buff_temp[51-1] = '\0';
-	char *inicio, *fin;
+	buff_temp[51-1] = '\0';   //Se le asigna NULL al ultimo espacio del buffer
+	char *inicio, *fin;       //inicio apunta al primer espacio del buffer
 	inicio = buff;
 	do {
 		//printf("inicio = %s\n",inicio);
-		fin = encontrar_prox_operador(inicio);
-		if (fin != NULL) {
-			strncpy(buff_temp, inicio, fin-inicio);
-			info.valor = atof(buff_temp);
+		fin = encontrar_prox_operador(inicio);   // //Busca el punto de partida o referencia
+		if (fin != NULL) {                       // Si fin apunta a un signo (operador) 
+			strncpy(buff_temp, inicio, fin-inicio);  // copia en buff_temp los elementos que interesan (lo que se encuentra antes del operador).       (longitud-inicio)  
+			info.valor = atof(buff_temp);          	//convierte de string a float   
 			info.operador = ' ';
 			//printf("info.valor %f\n",info.valor);
-			insertarCola(cola, info);
+			insertarCola(cola, info);        // inserta en la cola la información
 			info.valor = 0;
-			info.operador = *fin;
+			info.operador = *fin;            // La información será el contenido de fin
 			insertarCola(cola, info);
 			//printf("info.operador %c\n",info.operador);
-			inicio = fin+1;
+			inicio = fin+1;                          // Actualiza el apuntador, de esta manera no se tiene en cuenta el dato al que apuntaba anteriormente
+			
 		} 
-		else {
+		else {                                             // Ya es el ultimo digito
 			strncpy(buff_temp, inicio, (inicio-1)-buff);
 			info.valor = atof(buff_temp);
 			info.operador = ' ';
@@ -113,13 +120,13 @@ void ingresar_datos_cola ( ApTipoCola cola, char *buff ) {
 			//printf("info.valor %f\n",info.valor);
 			
 		}
-		memset(buff_temp, '\0', 51);
+		memset(buff_temp, '\0', 51);                       //borra el buff temporal, evita que se sobreescriba
 	} while (fin != NULL);
 	
 }
 
 /*
-*
+Como parametro recibe una cola, retorna el ultimo valor de dicha cola
 */
 Datos encontrarUltimoCola ( ApTipoCola cola ) {
 	Datos info, info_necesaria;
@@ -143,7 +150,7 @@ Datos encontrarUltimoCola ( ApTipoCola cola ) {
 }
 
 /*
-*
+Como parametro recibe una cola, elimina el ultimo valor de dicha cola
 */
 void eliminarUltimoCola ( ApTipoCola cola ) {
 	Datos info;
@@ -164,7 +171,8 @@ void eliminarUltimoCola ( ApTipoCola cola ) {
 }
 
 /*
-*
+La función recibe como parametro una cola en la que se encuentra la expresión original y devuelve en la misma cola una nueva
+expresión equivalente la cual solo incluye sumas y restas, es decir la función solo opera divisiones y multiplicaciones. 
 */
 void eliminar_multip_div ( ApTipoCola cola ) {
 	Datos num1, num2, op;
@@ -175,12 +183,12 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 	num1 = retirarCola(cola);
 	op = retirarCola(cola);
 
-	
+	//Se mira a que operador corresponde
 
 	if ( op.operador == '*' ) {
-		num2 = retirarCola(cola);
-		num2.valor *= num1.valor; 
-		insertarCola(aux_ptr, num2);
+		num2 = retirarCola(cola);   // Se retira de la cola al siguiente dato
+		num2.valor *= num1.valor;     // Se realiza la operación correspondiente (multiplicación) entres ambos datos
+		insertarCola(aux_ptr, num2);   // Se inserta el resultado en una cola auxiliar
 	} 
 	else if ( op.operador == '/' ) {
 		num2 = retirarCola(cola);
@@ -226,7 +234,7 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 			}
 			
 		}
-		else { // es un operador significa que el anterior era multip/division
+		else { // es un operador significa que el anterior era multip/division, se analiza cual de los dos es
 			
 			op = retirarCola(cola);
 			
@@ -238,15 +246,15 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 				insertarCola(aux_ptr, num2);
 			} 
 			else if ( op.operador == '/' ) {
-				num2 = encontrarUltimoCola(aux_ptr);
+				num2 = encontrarUltimoCola(aux_ptr);    //Se busca cual es el ultimo de la cola auxiliar
 				num1 = retirarCola(cola);
 				if (num1.valor == 0) {
 					printf("ERROR DIV 0\n");
 					return;
 				}
-				num2.valor /= num1.valor;
-				eliminarUltimoCola(aux_ptr);
-				insertarCola(aux_ptr, num2);
+				num2.valor /= num1.valor;     //Se opera el resultado de lo que había en la cola auxiliar con el dato tope de la original
+				eliminarUltimoCola(aux_ptr);   // Se elimina el ultimo dato de la cola auxiliar, con el fin de ingresar el nuevo resultado
+				insertarCola(aux_ptr, num2);   // Se inserta el nuevo resultado en auxiliar
 			} 
 			else if ( op.operador == '+' || op.operador == '-' ) { 
 				num1 = retirarCola(cola);
@@ -257,13 +265,14 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 	}
 	//printf("\nllegue\n");
 	//mostrarCola(aux_ptr);
-	while ( !vaciaCola(aux_ptr) ) {
+	while ( !vaciaCola(aux_ptr) ) {  //Se hace una migración de datos de la cola auxiliar a la original
 		insertarCola(cola, retirarCola(aux_ptr));
 	}
 }
 
 /*
-*
+Recibe como parametro una cola cuyo contenido es una expresión que solo contiene sumas y restas, returna el resultado
+de operar dicha expresión.
 */
 float operar_restantes ( ApTipoCola cola ) {
 
@@ -315,7 +324,8 @@ float operar_restantes ( ApTipoCola cola ) {
 }
 
 /*
-*
+La función recibe como parametro una cola, realiza el desarrollo de la expresión según una prioridad que se asignó para el desarroloo del programa
+(primero divisiones y multiplicaciones) despues procede a realizar la expresión resultante para finalmente retornar el resultado final.
 */
 float realizar_operacion_ingresada ( ApTipoCola cola ) {
 	eliminar_multip_div ( cola );
@@ -323,7 +333,7 @@ float realizar_operacion_ingresada ( ApTipoCola cola ) {
 }
 
 /*
-*
+Como parametro recibe una cola y realiza la inversión recursiva de esta
 */
 void invertirColaRec ( ApTipoCola cola ) {
 	Datos info;
@@ -353,7 +363,7 @@ void imprimirColaRec ( ApTipoCola cola ) {
 }
 
 /*
-*
+La función recibe como parametro una cola y la muestra de manera recursiva.
 */
 void mostrarColaRec ( ApTipoCola cola ) {
 	printf("\n La cola esta asi :\n\n");
@@ -373,8 +383,8 @@ int main(void){
 	cola_ptr = &cola;
 	crearCola(&cola);
 	
-	memset(buff, '\0', 51);
-	ingresar_datos_usuario(buff);
+	memset(buff, '\0', 51); //llena el buffer de Nulls
+	ingresar_datos_usuario(buff); 
 	ingresar_datos_cola (cola_ptr, buff);
 	mostrarColaRec(cola_ptr);
 	resultado = realizar_operacion_ingresada(cola_ptr);
