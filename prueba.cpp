@@ -67,17 +67,21 @@ char *encontrar_prox_operador ( char *buff ) {
 	int i = 0;
 	//printf("tama√±o = %ld\n", tamano);
 	while (i < tamano) {
-		if (*(dato+i) >= '0' && *(dato+i) <= '9') { /* si es un numero */
+        if (*(dato+i) >= '0' && *(dato+i) <= '9') { /* si es un numero */
 
-		} 
-		else if (*(dato+i) == '\0') {    // dato [i]
-			return NULL;
-		}
-		else {                        //Es un operador
-		 return dato+i;
-		}
-		i++;
-	}
+        }
+        	else if (*(dato+i) == '\0') {    // dato [i]
+            return NULL;
+        }
+       		 else if ( *(dato+i) =='*' ||*(dato+i) =='/' ||*(dato+i) =='+' ||*(dato+i) =='-' ){                        //Es un operador
+         	return dato+i;
+        }
+        	else {
+            printf("Operador invalido, el codigo se cerrara\n");
+            exit(-1);
+        }
+        i++;
+    }
 	
 	return NULL;
 
@@ -193,7 +197,8 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 	else if ( op.operador == '/' ) {
 		num2 = retirarCola(cola);
 		if (num2.valor == 0) {
-			printf("ERROR DIV 0\n");
+			printf("ERROR DIV 0, el codigo se cerrara\n");
+			exit(-1);
 			return;
 		}
 		num1.valor /= num2.valor;
@@ -221,7 +226,8 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 				else if ( op.operador == '/' ) {
 					num2 = retirarCola(cola);
 					if (num2.valor == 0) {
-						printf("ERROR DIV 0\n");
+						printf("ERROR DIV 0, el codigo se cerrara\n");
+						exit(-1);
 						return;
 					}
 					num1.valor /= num2.valor;
@@ -249,7 +255,8 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 				num2 = encontrarUltimoCola(aux_ptr);    //Se busca cual es el ultimo de la cola auxiliar
 				num1 = retirarCola(cola);
 				if (num1.valor == 0) {
-					printf("ERROR DIV 0\n");
+					printf("ERROR DIV 0, el codigo se cerrara\n");
+					exit(-1);
 					return;
 				}
 				num2.valor /= num1.valor;     //Se opera el resultado de lo que habÌa en la cola auxiliar con el dato tope de la original
