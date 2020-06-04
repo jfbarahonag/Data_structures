@@ -7,22 +7,26 @@
 #include "colas.h"
 
 /*
-* Solución al parcial 2, Estructuras de datos
+* Solucion al parcial 2, Estructuras de datos
 *
 * Juan Felipe Barahona Gonzalez
-* Mateo Álvarez Vásquez
+* Mateo Alvarez Vasquez
 * 
-* Inicialmente la expresión se almacena en una cola (cada operador o valor ocupa un solo nodo) posteriormente se recorre la cola 
-* buscando la operación segun un orden de prioridad asignado, en este caso primero se realizan multiplicaciones y divisiones cuyos
-* resultados se guardan en la misma cola, para después operar la expresión resultante ahora ya evaluando sumas y/o restas. Finalmente 
+* Inicialmente la expresion se almacena en una cola (cada operador
+* o valor ocupa un solo nodo) posteriormente se recorre la cola 
+* buscando la operacion segun un orden de prioridad asignado, en 
+* este caso, primero se realizan multiplicaciones y/o divisiones cuyos
+* resultados se guardan en la misma cola, para despues operar la 
+* expresion resultante ahora ya evaluando sumas y/o restas. Finalmente 
 * se devuelve el resultado como un flotante.
-*
+*/
+
 /*
 * Muestra una cola con una expresion sin destruirla
+*
 * @param cola
 * @return void
 */
-
 void mostrarPila(TipoPila **pila) {
 	Datos info;
 	TipoPila *aux;
@@ -42,8 +46,10 @@ void mostrarPila(TipoPila **pila) {
 		insertarPila(pila,retirarPila(&aux));
 	}
 }
+
 /*
-* Muestra una cola con una expresión sin destruirla
+* Muestra una cola con una expresion sin destruirla
+*
 * @param cola
 * @return void
 */
@@ -68,6 +74,7 @@ void mostrarCola(TipoCola *lacola) {
 
 /*
 * Se lee el string completo ingresado por el usuario
+*
 * @param *buff
 * @return void
 */
@@ -77,11 +84,12 @@ void ingresar_datos_usuario ( char *buff ) {
 }
 
 /*
-*Encuentra un operador, Como parametro recibe un apuntador al buffer y retorna un apuntador al buffer desde el operador encontrado.
+* Encuentra un operador, como parametro recibe un apuntador al buffer y 
+* retorna un apuntador al buffer desde el operador encontrado.
+*
 * @param *buff
 * @return dato[i] || @return NULL
 */
-
 char *encontrar_prox_operador ( char *buff ) {
 	size_t tamano = strlen(buff);
 	char *dato;
@@ -103,7 +111,7 @@ char *encontrar_prox_operador ( char *buff ) {
             exit(-1);
             return NULL;
         }
-        i++; // Se mueve a la siguiente posición del buffer
+        i++; // Se mueve a la siguiente posiciï¿½n del buffer
     }
 	
 	return NULL;
@@ -112,55 +120,59 @@ char *encontrar_prox_operador ( char *buff ) {
 
 
 /*
-* Toma los datos leidos por el buffer y los organiza en el mismo orden que llegaron en la cola.
-* Como parametro de entrada recibe la cola en que serán guardados los datos y el buffer del cual provienen, La función  opera con dos apuntadores
-* los cuales apuntarán a diferentes posiciones del buffer según el contenido de este (Valor u operador) para lo cual se utilizará otra funcion llamada 
-* "encontrar_prox_operador"
-* se irán insertando los datos que se encuentren dentro del rango obtenido al restar las dos posiciones de cada apuntador
+* Toma los datos leidos por el buffer y los organiza en el mismo orden 
+* que llegaron en la cola.
+* Como parametro de entrada recibe la cola en que seran guardados los 
+* datos y el buffer del cual provienen. La funcion  opera con dos apuntadores
+* los cuales apuntaran a diferentes posiciones del buffer segun el contenido 
+* de este (Valor u operador) para lo cual se utilizara otra funcion llamada 
+* "encontrar_prox_operador" se iran insertando los datos que se encuentren 
+* dentro del rango obtenido al restar las dos posiciones de cada apuntador.
+*
 * @param cola
 * @param *buff
 * @return void
 */
-
 void ingresar_datos_cola ( ApTipoCola cola, char *buff ) {
 	Datos info;
 	char buff_temp[51];
-	buff_temp[51-1] = '\0';   											//Se le asigna NULL al ultimo espacio del buffer
-	char *inicio, *fin;       											//inicio apunta al primer espacio del buffer
+	buff_temp[51-1] = '\0';									//Se le asigna NULL al ultimo espacio del buffer
+	char *inicio, *fin;										//inicio apunta al primer espacio del buffer
 	inicio = buff;
 	do {
 		//printf("inicio = %s\n",inicio);
 		fin = encontrar_prox_operador(inicio);   
-		if (fin != NULL) {                      						 // Si fin apunta a un signo (operador) 
-			strncpy(buff_temp, inicio, fin-inicio); 					 // copia en buff_temp los elementos que interesan (lo que se encuentra antes del operador).        
-			info.valor = atof(buff_temp);          						 //convierte de string a float y lo guarda en info.valor  
+		if (fin != NULL) {									// Si fin apunta a un signo (operador) 
+			strncpy(buff_temp, inicio, fin-inicio);			// copia en buff_temp los elementos que interesan (lo que se encuentra antes del operador).        
+			info.valor = atof(buff_temp);					//convierte de string a float y lo guarda en info.valor  
 			info.operador = ' ';
 			//printf("info.valor %f\n",info.valor);
-			insertarCola(cola, info);                                    // inserta en la cola la información
+			insertarCola(cola, info);						// inserta en la cola la informaciï¿½n
 			info.valor = 0;
-			info.operador = *fin;                                        // El operador será el primer elemento de fin
+			info.operador = *fin;							// El operador serï¿½ el primer elemento de fin
 			insertarCola(cola, info);
 			//printf("info.operador %c\n",info.operador);
-			inicio = fin+1;                                              // Actualiza el apuntador, apunta a la posición siguiente del signo encontrado
+			inicio = fin+1;									// Actualiza el apuntador, apunta a la posiciï¿½n siguiente del signo encontrado
 			
 		} 
-		else {                                                           // Ya es el ultimo digito
-			strncpy(buff_temp, inicio, (inicio-1)-buff);                 // Copia en buffer temporal el dígito después del último operador
+		else {												// Ya es el ultimo digito
+			strncpy(buff_temp, inicio, (inicio-1)-buff);	// Copia en buffer temporal el dï¿½gito despuï¿½s del ï¿½ltimo operador
 			info.valor = atof(buff_temp);
 			info.operador = ' ';
 			insertarCola(cola, info);
 			//printf("info.valor %f\n",info.valor);
 			
 		}
-		memset(buff_temp, '\0', 51);                                     //llena el buffer temporal de NULL, evita que se sobreescriba
+		memset(buff_temp, '\0', 51);						//llena el buffer temporal de NULL, evita que se sobreescriba
 	} while (fin != NULL);
 	
 }
 
 /*
-Retorna el ultimo valor de una cola
+* Retorna el ultimo valor de una cola
+*
 * @param cola 
-* @return info_necsaria
+* @return info_necesaria
 */
 Datos encontrarUltimoCola ( ApTipoCola cola ) {
 	Datos info, info_necesaria;
@@ -171,7 +183,7 @@ Datos encontrarUltimoCola ( ApTipoCola cola ) {
 
 	while ( !vaciaCola(cola) ) {
 		info = retirarCola(cola);
-		if (vaciaCola(cola)) {                                         // revisa el siguiente 
+		if (vaciaCola(cola)) {		// revisa el siguiente 
 			info_necesaria = info;
 		}
 		insertarCola(aux_ptr, info);
@@ -184,7 +196,8 @@ Datos encontrarUltimoCola ( ApTipoCola cola ) {
 }
 
 /*
-Elimina el ultimo valor de ona cola
+* Elimina el ultimo valor de una cola.
+*
 * @param cola
 * @return void
 */
@@ -207,9 +220,13 @@ void eliminarUltimoCola ( ApTipoCola cola ) {
 }
 
 /*
-La función recibe como parametro una cola en la que se encuentra la expresión original y la modifica entregando en la misma cola una nueva
-expresión equivalente la cual solo incluye sumas y restas, es decir la función solo opera divisiones y multiplicaciones.
-Si en la expresión solo hay multiplicaciones y/o divisiones devuelve el resultado en la misma cola
+* La funcion recibe como parametro una cola en la que se encuentra la 
+* expresion original y la modifica entregando en la misma cola una nueva
+* expresion equivalente la cual solo incluye sumas y restas, es decir, la 
+* funcion solo opera divisiones y multiplicaciones.
+* Si en la expresion solo hay multiplicaciones y/o divisiones devuelve 
+* el resultado en la misma cola
+*
 * @param cola
 * @return void
 */
@@ -310,15 +327,17 @@ void eliminar_multip_div ( ApTipoCola cola ) {
 	}
 	//printf("\nllegue\n");
 	//mostrarCola(aux_ptr);
-	while ( !vaciaCola(aux_ptr) ) {  //Se hace una migración de datos de la cola auxiliar a la original
+	while ( !vaciaCola(aux_ptr) ) {  //Se hace una migraciï¿½n de datos de la cola auxiliar a la original
 		insertarCola(cola, retirarCola(aux_ptr));
 	}
 }
 
 /*
-Recibe como parametro una cola cuyo contenido es una expresión que solo contiene sumas y/o restas o solo el resultado si las 
-operaciones son solo multiplicaciones y/o divisiones ,returna el resultado como un valor flotante y destruye la cola original
-
+* Recibe como parametro una cola cuyo contenido es una expresion 
+* que solo contiene sumas y/o restas o solo el resultado si las 
+* operaciones son solo multiplicaciones y/o divisiones ,retorna 
+* el resultado como un valor flotante y destruye la cola original.
+*
 * @param cola
 * @return resultado.valor
 */
@@ -330,8 +349,8 @@ float operar_restantes ( ApTipoCola cola ) {
 	ApTipoCola aux_ptr;
 	aux_ptr = &aux;
 
-	num1 = retirarCola(cola);                        //retira el último de la cola	 
-	if( vaciaCola(cola) ) {                          // Si es el unico u último número de la cola ese será el resultado                   
+	num1 = retirarCola(cola);		//retira el ultimo de la cola	 
+	if( vaciaCola(cola) ) {			// Si es el unico u ultimo numero de la cola ese sera el resultado                   
 		resultado = num1;
 		return resultado.valor;               
 	}
@@ -350,7 +369,7 @@ float operar_restantes ( ApTipoCola cola ) {
 	else { /* ERROR */
 		exit(-1);
 	}
-	// El siguiente dato de la cola será un operador
+	// El siguiente dato de la cola serï¿½ un operador
 	while ( !vaciaCola(cola) ) {
 		op = retirarCola(cola);
 		if ( op.operador == '+' ) {
@@ -371,8 +390,12 @@ float operar_restantes ( ApTipoCola cola ) {
 }
 
 /*
-La función recibe como parametro una cola, realiza el desarrollo de la expresión según una prioridad que se asignó para el desarrollo del programa
-(primero divisiones y multiplicaciones) despues procede a realizar la expresión resultante para finalmente retornar el resultado final.
+* La funcion recibe como parametro una cola, realiza el desarrollo de 
+* la expresion segun una prioridad que se asigno para el desarrollo del 
+* programa (primero divisiones y multiplicaciones) despues procede a 
+* realizar la expresion resultante para finalmente retornar el resultado 
+* final.
+*
 * @param cola
 * @return operar_restantes
 */
@@ -382,7 +405,8 @@ float realizar_operacion_ingresada ( ApTipoCola cola ) {
 }
 
 /*
-Como parametro recibe una cola y realiza la inversión recursiva de esta
+* Como parametro recibe una cola y realiza la inversion recursiva de esta.
+*
 * @param cola
 * @return void
 */
@@ -396,8 +420,10 @@ void invertirColaRec ( ApTipoCola cola ) {
 }
 
 /*
-*@ param cola
-*@ return void
+* Imprime los valores de la cola recursivamente y la invierte.
+*
+* @param cola
+* @return void
 */
 void imprimirColaRec ( ApTipoCola cola ) {
 	Datos info;
@@ -415,9 +441,11 @@ void imprimirColaRec ( ApTipoCola cola ) {
 }
 
 /*
-La función recibe como parametro una cola y la muestra de manera recursiva.
-*@ param cola
-*@ return void
+* La funcion recibe como parametro una cola y la muestra de manera recursiva.
+* Primero se muestra la cola inviertiendola, luego se invierte de nuevo.
+*
+* @param cola
+* @return void
 */
 void mostrarColaRec ( ApTipoCola cola ) {
 	printf("\n La cola esta asi :\n\n");
@@ -443,5 +471,7 @@ int main(void){
 	mostrarColaRec(cola_ptr);
 	resultado = realizar_operacion_ingresada(cola_ptr);
 	printf("resultado final = %0.2f\n", resultado);
+
+	return NULL;
 	
 }
