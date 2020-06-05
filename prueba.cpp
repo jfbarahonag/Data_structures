@@ -22,9 +22,9 @@
 */
 
 /*
-* Muestra una cola con una expresion sin destruirla
+* Muestra una pila con una expresion sin destruirla
 *
-* @param cola
+* @param **pila
 * @return void
 */
 void mostrarPila(TipoPila **pila) {
